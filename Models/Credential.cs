@@ -8,3 +8,4 @@ public class Credential {
     public string Password { get; set; } = string.Empty;
     public string Note { get; set; } = string.Empty;
 }
+

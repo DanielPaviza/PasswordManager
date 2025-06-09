@@ -11,5 +11,20 @@
   
     <Application.Styles>
         <FluentTheme />
+		<Style Selector="TextBox.no-theme">
+			<Setter Property="Background" Value="Black"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="CaretBrush" Value="White"/>
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+
+		<Style Selector="TextBox.no-theme:focus">
+			<Setter Property="Background" Value="Black"/>
+		</Style>
+
+		<Style Selector="TextBox.no-theme:pointerover">
+			<Setter Property="Background" Value="Black"/>
+		</Style>
     </Application.Styles>
+
 </Application>

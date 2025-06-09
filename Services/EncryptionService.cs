@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PasswordManager.Configs;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -6,18 +7,17 @@ using System.Text;
 namespace PasswordManager.Services;
 
 public class EncryptionService {
-    private readonly byte[] _key;
 
-    public EncryptionService(string masterPassword) {
-        // Derive a 256-bit key from the master password using PBKDF2
-        var salt = Encoding.UTF8.GetBytes("TvojeMámaJeŽenská");
-        using var kdf = new Rfc2898DeriveBytes(masterPassword, salt, 100_000, HashAlgorithmName.SHA256);
-        _key = kdf.GetBytes(32);
+    private readonly byte[] _credentialKey;
+
+    public EncryptionService() {
+
+        _credentialKey = CreateKdfKey();
     }
 
-    public string Encrypt(string plainText) {
+    public string EncryptCredentials(string plainText) {
         using var aes = Aes.Create();
-        aes.Key = _key;
+        aes.Key = _credentialKey;
         aes.GenerateIV();
         using var encryptor = aes.CreateEncryptor();
 
@@ -30,10 +30,10 @@ public class EncryptionService {
         return Convert.ToBase64String(ms.ToArray());
     }
 
-    public string Decrypt(string cipherText) {
-        var bytes = Convert.FromBase64String(cipherText);
+    public string DecryptCredentials(string encryptedText) {
+        var bytes = Convert.FromBase64String(encryptedText);
         using var aes = Aes.Create();
-        aes.Key = _key;
+        aes.Key = _credentialKey;
         var iv = new byte[aes.BlockSize / 8];
         Array.Copy(bytes, 0, iv, 0, iv.Length);
         aes.IV = iv;
@@ -43,5 +43,25 @@ public class EncryptionService {
         using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
         using var sr = new StreamReader(cs);
         return sr.ReadToEnd();
+    }
+
+    public static bool VerifyMasterPassword(string input) {
+        return PasswordConfig.MasterPassword == MakeSha256Hash(input);
+    }
+
+    private static string MakeSha256Hash(string input) {
+        var saltedPassword = string.Format("{0}{1}", PasswordConfig.MasterPasswordSalt, input);
+        var bytes = Encoding.UTF8.GetBytes(saltedPassword);
+        var hash = SHA256.HashData(bytes);
+        return Convert.ToHexString(hash);
+    }
+
+
+    // Derive a 256-bit key from the master password using PBKDF2
+    private static byte[] CreateKdfKey() {
+        var password = Encoding.UTF8.GetBytes(PasswordConfig.MasterPassword);
+        var salt = Encoding.UTF8.GetBytes(PasswordConfig.CredentialPasswordSalt);
+        using var kdf = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
+        return kdf.GetBytes(32);
     }
 }
