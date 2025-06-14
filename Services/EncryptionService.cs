@@ -46,7 +46,8 @@ public class EncryptionService {
     }
 
     public static bool VerifyMasterPassword(string input) {
-        return PasswordConfig.MasterPassword == MakeSha256Hash(input);
+        var inputHash = MakeSha256Hash(input);
+        return PasswordConfig.MasterPassword.Equals(inputHash, StringComparison.CurrentCultureIgnoreCase);
     }
 
     private static string MakeSha256Hash(string input) {
@@ -55,7 +56,6 @@ public class EncryptionService {
         var hash = SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
     }
-
 
     // Derive a 256-bit key from the master password using PBKDF2
     private static byte[] CreateKdfKey() {

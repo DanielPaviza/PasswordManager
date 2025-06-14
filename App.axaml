@@ -1,30 +1,37 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PasswordManager.App"
-             xmlns:local="using:PasswordManager"
+			 xmlns:local="clr-namespace:PasswordManager"
+			 xmlns:converter="clr-namespace:PasswordManager.Converters"
              RequestedThemeVariant="Default">
              <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
-  
-    <Application.Styles>
-        <FluentTheme />
-		<Style Selector="TextBox.no-theme">
-			<Setter Property="Background" Value="Black"/>
-			<Setter Property="Foreground" Value="White"/>
-			<Setter Property="CaretBrush" Value="White"/>
-			<Setter Property="BorderBrush" Value="Transparent"/>
+
+	<Application.Resources>
+	</Application.Resources>
+
+	<Application.Styles>
+		<FluentTheme />
+
+		<Style Selector="TextBox.focus-black">
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Name="border"
+							BorderBrush="{TemplateBinding BorderBrush}">
+						<TextPresenter Name="PART_TextPresenter"
+									   Text="{TemplateBinding Text}"
+									   Margin="{TemplateBinding Margin}"
+									   PasswordChar="{TemplateBinding PasswordChar}"
+									   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+									   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
 		</Style>
 
-		<Style Selector="TextBox.no-theme:focus">
-			<Setter Property="Background" Value="Black"/>
-		</Style>
-
-		<Style Selector="TextBox.no-theme:pointerover">
-			<Setter Property="Background" Value="Black"/>
-		</Style>
-    </Application.Styles>
-
+	</Application.Styles>
+	
 </Application>

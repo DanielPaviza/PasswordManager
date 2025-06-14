@@ -1,31 +1,35 @@
-﻿using Avalonia;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using PasswordManager.ViewModels;
 
 namespace PasswordManager.Views;
 
 public partial class LoginView : UserControl {
+
+    private readonly TextBox? _passwordBox;
+
     public LoginView() {
         InitializeComponent();
+        _passwordBox = this.FindControl<TextBox>("passwordInput");
+        _passwordBox!.AttachedToVisualTree += (_, __) => {
+            _passwordBox.Focus();
+            Dispatcher.UIThread.Post(() => {
+                _passwordBox.FocusAdorner = null;
+            });
+        };
+    }
 
-        this.AttachedToVisualTree += OnAttachedToVisualTree;
-        //var input = this.FindControl<TextBox>("HiddenInput");
-        //if (input.IsEffectivelyEnabled) {
-        //    input.Focus();
-        //}
+    private void PasswordInput_KeyDown(object? sender, KeyEventArgs e) {
+
+        if (DataContext is LoginViewModel vm) {
+            if (e.Key == Key.Enter && vm.LoginCommand.CanExecute(null))
+                vm.LoginCommand.Execute(null); ;
+        }
     }
 
     private void InitializeComponent() {
         AvaloniaXamlLoader.Load(this);
-    }
-
-    private void OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e) {
-        Dispatcher.UIThread.Post(() => {
-            var input = this.FindControl<TextBox>("HiddenInput");
-            if (input?.IsVisible == true && input.IsEffectivelyEnabled) {
-                input.Focus();
-            }
-        }, DispatcherPriority.Background);
     }
 }

@@ -16,9 +16,6 @@ public partial class LoginViewModel : ViewModelBase {
     private string _inputPassword = string.Empty;
 
     [ObservableProperty]
-    private string? _validationMessage;
-
-    [ObservableProperty]
     private bool _renderInput;
 
     [ObservableProperty]
@@ -55,19 +52,13 @@ public partial class LoginViewModel : ViewModelBase {
         RenderInput = true;
     }
 
-
     private void Login() {
 
-        if (string.IsNullOrWhiteSpace(InputPassword)) {
-            ValidationMessage = "Please enter your master password.";
+        if (EncryptionService.VerifyMasterPassword(InputPassword)) {
+            _onLoginSuccess.Invoke();
             return;
         }
 
-        if (EncryptionService.VerifyMasterPassword(InputPassword)) {
-            ValidationMessage = string.Empty;
-            _onLoginSuccess.Invoke();
-        } else {
-            ValidationMessage = "Invalid password.";
-        }
+        InputPassword = "";
     }
 }

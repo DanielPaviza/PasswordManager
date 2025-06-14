@@ -3,8 +3,8 @@ using Avalonia.Markup.Xaml;
 
 namespace PasswordManager.Views;
 
-public partial class PasswordsListView : UserControl {
-    public PasswordsListView() {
+public partial class CredentialsListView : UserControl {
+    public CredentialsListView() {
         InitializeComponent();
     }
 

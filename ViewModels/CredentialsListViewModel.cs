@@ -2,10 +2,10 @@
 
 namespace PasswordManager.ViewModels;
 
-public partial class PasswordsListViewModel : ViewModelBase {
+public partial class CredentialsListViewModel : ViewModelBase {
     private readonly INavigationService _navigation;
 
-    public PasswordsListViewModel(INavigationService navigation) {
+    public CredentialsListViewModel(INavigationService navigation) {
         _navigation = navigation;
     }
 }

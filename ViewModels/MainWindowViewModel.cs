@@ -24,9 +24,12 @@ public partial class MainWindowViewModel : ViewModelBase, INavigationService {
     [ObservableProperty]
     private Avalonia.Media.IImmutableSolidColorBrush _windowBgColor = Avalonia.Media.Brushes.Black;
 
+    private readonly CredentialsListViewModel CredentialsListViewModel;
+
     public MainWindowViewModel() {
-        var loginViewModel = new LoginViewModel(OnLoginSuccess);
-        CurrentView = loginViewModel;
+
+        CurrentView = new LoginViewModel(OnLoginSuccess);
+        CredentialsListViewModel = new CredentialsListViewModel(this);
     }
 
     public void NavigateTo(ViewModelBase viewModel) {
@@ -46,6 +49,6 @@ public partial class MainWindowViewModel : ViewModelBase, INavigationService {
         WindowCanResize = true;
         WindowBgColor = Avalonia.Media.Brushes.White;
 
-        NavigateTo(new PasswordsListViewModel(this));
+        CurrentView = CredentialsListViewModel;
     }
 }

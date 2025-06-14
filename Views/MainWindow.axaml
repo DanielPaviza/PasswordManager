@@ -4,11 +4,17 @@
 		xmlns:views="clr-namespace:PasswordManager.Views"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" 
+		d:DesignWidth="600" d:DesignHeight="300"
         x:Class="PasswordManager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="PasswordManager">
+        Title="PasswordManager"
+        Width="{Binding WindowWidth}"	
+		Height="{Binding WindowHeight}"
+		CanResize="{Binding WindowCanResize}"
+		Background="{Binding WindowBgColor}"
+>
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -21,8 +27,8 @@
 			<views:LoginView />
 		</DataTemplate>
 
-        <DataTemplate DataType="{x:Type vm:PasswordsListViewModel}">
-            <views:PasswordsListView />
+        <DataTemplate DataType="{x:Type vm:CredentialsListViewModel}">
+			<views:CredentialsListView />
         </DataTemplate>
         
 	</Window.DataTemplates>
