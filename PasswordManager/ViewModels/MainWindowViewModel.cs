@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using PasswordManager.Interfaces;
 using PasswordManager.Services;
+using System;
 
 namespace PasswordManager.ViewModels;
 
@@ -51,8 +52,10 @@ public partial class MainWindowViewModel : ViewModelBase {
 
         Nav.NavigateTo(LoginViewModel);
 
-        // skip login for debugging purposes
+#if DEBUG
+        Console.WriteLine("DEBUG: Skipping login.");
         OnLoginSuccess();
+#endif
     }
 
     private void OnLoginSuccess() {

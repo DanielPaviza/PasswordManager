@@ -1,5 +1,6 @@
 ﻿using PasswordManager.Configs;
 using PasswordManager.Interfaces;
+using PasswordManager.Security;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -9,12 +10,7 @@ namespace PasswordManager.Services;
 
 public class EncryptionService : IEncryptionService {
 
-    private readonly byte[] _credentialKey;
-
-    public EncryptionService() {
-
-        _credentialKey = CreateKdfKey();
-    }
+    private static byte[] _credentialKey = [];
 
     public string EncryptCredentials(string plainText) {
         using var aes = Aes.Create();
@@ -47,31 +43,16 @@ public class EncryptionService : IEncryptionService {
     }
 
     public static bool VerifyMasterPassword(string input) {
-        var inputHash = MakeSha256Hash(input);
-        return PasswordConfig.MasterPassword.Equals(inputHash, StringComparison.CurrentCultureIgnoreCase);
-    }
+        var saltBytes = Convert.FromBase64String(PasswordConfig.MasterPasswordSalt);
+        var inputHash = HashService.HashPassword(input, saltBytes);
+        bool success = PasswordConfig.MasterPassword.Equals(inputHash, StringComparison.CurrentCultureIgnoreCase);
+        if (success) _credentialKey = CreateKdfKey(inputHash);
 
-    //public static byte[] HashPassword(string password, byte[] salt, int memoryKb = 65536, int iterations = 4, int parallelism = 2) {
-
-    //    var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)) {
-    //        Salt = salt,
-    //        DegreeOfParallelism = parallelism,
-    //        MemorySize = memoryKb,
-    //        Iterations = iterations
-    //    };
-
-    //    return argon2.GetBytes(32); // 256-bit output
-    //}
-
-    private static string MakeSha256Hash(string input) {
-        var saltedPassword = string.Format("{0}{1}", PasswordConfig.MasterPasswordSalt, input);
-        var bytes = Encoding.UTF8.GetBytes(saltedPassword);
-        var hash = SHA256.HashData(bytes);
-        return Convert.ToHexString(hash);
+        return success;
     }
 
     // Derive a 256-bit key from the master password using PBKDF2
-    private static byte[] CreateKdfKey() {
+    private static byte[] CreateKdfKey(string masterPassword) {
         var password = Encoding.UTF8.GetBytes(PasswordConfig.MasterPassword);
         var salt = Encoding.UTF8.GetBytes(PasswordConfig.CredentialPasswordSalt);
         using var kdf = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
