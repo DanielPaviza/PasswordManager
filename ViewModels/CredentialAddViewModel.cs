@@ -36,6 +36,11 @@ public partial class CredentialAddViewModel : ViewModelBase, INamedViewModel {
     }
 
     [RelayCommand]
+    private void ToggleShowPassword() {
+        ShowPassword = !ShowPassword;
+    }
+
+    [RelayCommand]
     private void NavigateToVault() {
         Nav.NavigateTo(CredentialsListViewModel);
     }

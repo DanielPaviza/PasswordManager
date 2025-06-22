@@ -11,11 +11,17 @@
     </Application.DataTemplates>
 
 	<Application.Resources>
-		<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
-		<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
-		<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
-		<converter:TabSelectionBrushConverter x:Key="PasswordCharConverter" />
-		<converter:TabSelectionBrushConverter x:Key="PasswordShowIconConverter" />
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://hpagent/Styles/IconStyle.axaml" />
+			</ResourceDictionary.MergedDictionaries>
+
+			<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
+			<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
+			<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
+			<converter:PasswordCharConverter x:Key="PasswordCharConverter" />
+			<converter:PasswordShowIconConverter x:Key="PasswordShowIconConverter" />
+		</ResourceDictionary>
 	</Application.Resources>
 
 	<Application.Styles>
