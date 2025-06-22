@@ -2,10 +2,14 @@
 
 namespace PasswordManager.ViewModels;
 
-public partial class CredentialsListViewModel : ViewModelBase {
-    private readonly INavigationService _navigation;
+public class CredentialsListViewModel : ViewModelBase, INamedViewModel {
 
-    public CredentialsListViewModel(INavigationService navigation) {
-        _navigation = navigation;
+    private readonly INavigationService Nav;
+
+    public bool IncludeInNavStack => true;
+    public string Title => "Credential vault";
+
+    public CredentialsListViewModel(INavigationService nav) {
+        Nav = nav;
     }
 }

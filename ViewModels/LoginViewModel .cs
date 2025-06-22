@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PasswordManager.Interfaces;
 using PasswordManager.Services;
 using System;
 using System.Collections.Generic;
@@ -8,9 +9,12 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.ViewModels;
 
-public partial class LoginViewModel : ViewModelBase {
+public partial class LoginViewModel : ViewModelBase, INamedViewModel {
 
     private static readonly Random Random = new();
+
+    public bool IncludeInNavStack => false;
+    public string Title => "Login";
 
     [ObservableProperty]
     private string _inputPassword = string.Empty;

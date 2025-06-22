@@ -1,4 +1,5 @@
 ﻿using PasswordManager.Configs;
+using PasswordManager.Interfaces;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -6,7 +7,7 @@ using System.Text;
 
 namespace PasswordManager.Services;
 
-public class EncryptionService {
+public class EncryptionService : IEncryptionService {
 
     private readonly byte[] _credentialKey;
 
@@ -49,6 +50,18 @@ public class EncryptionService {
         var inputHash = MakeSha256Hash(input);
         return PasswordConfig.MasterPassword.Equals(inputHash, StringComparison.CurrentCultureIgnoreCase);
     }
+
+    //public static byte[] HashPassword(string password, byte[] salt, int memoryKb = 65536, int iterations = 4, int parallelism = 2) {
+
+    //    var argon2 = new Argon2id(Encoding.UTF8.GetBytes(password)) {
+    //        Salt = salt,
+    //        DegreeOfParallelism = parallelism,
+    //        MemorySize = memoryKb,
+    //        Iterations = iterations
+    //    };
+
+    //    return argon2.GetBytes(32); // 256-bit output
+    //}
 
     private static string MakeSha256Hash(string input) {
         var saltedPassword = string.Format("{0}{1}", PasswordConfig.MasterPasswordSalt, input);

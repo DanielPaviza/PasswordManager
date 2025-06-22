@@ -1,16 +1,22 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using PasswordManager.Interfaces;
-using System.Collections.Generic;
+using PasswordManager.Services;
 
 namespace PasswordManager.ViewModels;
 
 
-public partial class MainWindowViewModel : ViewModelBase, INavigationService {
+public partial class MainWindowViewModel : ViewModelBase {
 
     [ObservableProperty]
-    private ViewModelBase currentView;
+    private INamedViewModel? _currentView;
 
-    private Stack<ViewModelBase> _viewStack = new();
+    [ObservableProperty]
+    private bool _isLoggedIn = false;
+
+    public INavigationService Nav { get; }
+
+    [ObservableProperty]
+    private string _windowTitle = "hpagent";
 
     [ObservableProperty]
     private int _windowWidth = 800;
@@ -24,22 +30,29 @@ public partial class MainWindowViewModel : ViewModelBase, INavigationService {
     [ObservableProperty]
     private Avalonia.Media.IImmutableSolidColorBrush _windowBgColor = Avalonia.Media.Brushes.Black;
 
+    public TopBarViewModel TopBarViewModel { get; }
     private readonly CredentialsListViewModel CredentialsListViewModel;
+    private readonly LoginViewModel LoginViewModel;
 
-    public MainWindowViewModel() {
+    public MainWindowViewModel(INavigationService nav, CredentialsListViewModel _credentialsListViewModel, TopBarViewModel _topBarViewModel) {
 
-        CurrentView = new LoginViewModel(OnLoginSuccess);
-        CredentialsListViewModel = new CredentialsListViewModel(this);
-    }
+        Nav = nav;
+        CredentialsListViewModel = _credentialsListViewModel;
+        TopBarViewModel = _topBarViewModel;
+        LoginViewModel = new LoginViewModel(OnLoginSuccess);
 
-    public void NavigateTo(ViewModelBase viewModel) {
-        _viewStack.Push(CurrentView);
-        CurrentView = viewModel;
-    }
+        if (Nav is NavigationService navImpl) {
+            navImpl.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(navImpl.CurrentView)) {
+                    CurrentView = navImpl.CurrentView;
+                }
+            };
+        }
 
-    public void NavigateBack() {
-        if (_viewStack.Count > 0)
-            CurrentView = _viewStack.Pop();
+        Nav.NavigateTo(LoginViewModel);
+
+        // skip login for debugging purposes
+        OnLoginSuccess();
     }
 
     private void OnLoginSuccess() {
@@ -48,7 +61,9 @@ public partial class MainWindowViewModel : ViewModelBase, INavigationService {
         WindowHeight = 800;
         WindowCanResize = true;
         WindowBgColor = Avalonia.Media.Brushes.White;
+        WindowTitle = "Password Manager";
+        IsLoggedIn = true;
 
-        CurrentView = CredentialsListViewModel;
+        Nav.NavigateTo(CredentialsListViewModel);
     }
 }

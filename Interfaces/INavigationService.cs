@@ -1,9 +1,9 @@
-﻿
-using PasswordManager.ViewModels;
-
-namespace PasswordManager.Interfaces;
+﻿namespace PasswordManager.Interfaces;
 
 public interface INavigationService {
-    void NavigateTo(ViewModelBase viewModel);
+
+    INamedViewModel? CurrentView { get; }
+    void NavigateTo(INamedViewModel viewModel);
     void NavigateBack();
+    bool CanNavigateBack();
 }

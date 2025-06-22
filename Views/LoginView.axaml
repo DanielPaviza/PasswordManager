@@ -36,7 +36,8 @@
 							HorizontalAlignment="Stretch"
 							PasswordChar="*"
 							Margin="2,5,0,0"
-							KeyDown="PasswordInput_KeyDown"/>
+							KeyDown="PasswordInput_KeyDown">
+				</TextBox>
 			</Grid>
 
 		</StackPanel>

@@ -11,6 +11,11 @@
     </Application.DataTemplates>
 
 	<Application.Resources>
+		<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
+		<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
+		<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
+		<converter:TabSelectionBrushConverter x:Key="PasswordCharConverter" />
+		<converter:TabSelectionBrushConverter x:Key="PasswordShowIconConverter" />
 	</Application.Resources>
 
 	<Application.Styles>
@@ -31,7 +36,7 @@
 				</ControlTemplate>
 			</Setter>
 		</Style>
-
+		
 	</Application.Styles>
 	
 </Application>

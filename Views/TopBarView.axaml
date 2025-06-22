@@ -1,0 +1,72 @@
+<UserControl 
+			xmlns="https://github.com/avaloniaui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:vm="clr-namespace:PasswordManager.ViewModels"
+            x:DataType="vm:TopBarViewModel"
+            x:Class="PasswordManager.Views.TopBarView"
+			xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			mc:Ignorable="d"
+			xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			d:DesignWidth="600" d:DesignHeight="300"		 
+>
+
+	<!--<Border Background="#4287f5" Height="50">-->
+	<Border Background="#5c99fa" Height="50">
+		<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch">
+			<!-- Left: Tabs -->
+			<Grid RowDefinitions="*" ColumnDefinitions="Auto,Auto" VerticalAlignment="Stretch">
+				<Button
+					Grid.Column="0"
+					Content="Vault"
+					Command="{Binding NavigateToCredentialsListCommand}"
+					Background="{Binding IsCredentialsListTabSelected, Converter={StaticResource TabSelectionBrushConverter}}"
+					Foreground="White"
+					VerticalAlignment="Stretch"
+					HorizontalAlignment="Center"
+					CornerRadius="0"					
+					VerticalContentAlignment="Center"
+					FontSize="17"
+					FontWeight="{Binding IsCredentialsListTabSelected, Converter={StaticResource TabSelectionFontWeightConverter}}"
+					Padding="20,0"/>
+				<Button
+					Grid.Column="1"
+					Content="Add"
+					CornerRadius="0"
+					Command="{Binding NavigateToAddCredentialCommand}"
+					Background="{Binding IsCredentialAddTabSelected, Converter={StaticResource TabSelectionBrushConverter}}"
+					Foreground="White"
+					VerticalAlignment="Stretch"
+					HorizontalAlignment="Center"
+					VerticalContentAlignment="Center"
+					FontSize="17"
+					FontWeight="{Binding IsCredentialAddTabSelected, Converter={StaticResource TabSelectionFontWeightConverter}}"
+					Padding="20,0"/>
+			</Grid>
+
+			<!-- Center: Title -->
+			<TextBlock Grid.Column="1"
+					   Text="{Binding Title}"
+					   FontSize="20"
+					   Foreground="White"
+					   HorizontalAlignment="Center"
+					   VerticalAlignment="Center"
+					   TextAlignment="Start"
+					   FontWeight="Bold"/>
+
+			<!-- Right: Navigation arrows -->
+			<Button 
+				Grid.Column="2" 
+				Content="← Back" 
+				VerticalAlignment="Stretch" 
+				Command="{Binding NavigateBackCommand}" 
+				Foreground="White"
+				VerticalContentAlignment="Center"		
+				CornerRadius="0"
+				Padding="20,0"
+				FontSize="16"
+			/>
+		</Grid>
+	</Border>
+
+
+</UserControl>

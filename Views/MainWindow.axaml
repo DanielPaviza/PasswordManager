@@ -9,7 +9,7 @@
         x:Class="PasswordManager.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/password_manager_icon.ico"
-        Title="hpagent"
+        Title="{Binding WindowTitle}"
         Width="{Binding WindowWidth}"	
 		Height="{Binding WindowHeight}"
 		CanResize="{Binding WindowCanResize}"
@@ -33,6 +33,16 @@
         
 	</Window.DataTemplates>
 
-	<ContentControl Content="{Binding CurrentView}" />
+	<Grid RowDefinitions="Auto,*">
+		<ContentControl
+			Grid.Row="0"
+			Content="{Binding TopBarViewModel}" 	
+			IsVisible="{Binding IsLoggedIn}"
+		/>
+
+		<ContentControl
+			Grid.Row="1"
+			Content="{Binding CurrentView}" />
+	</Grid>
 
 </Window>
