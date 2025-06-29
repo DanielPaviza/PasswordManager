@@ -15,7 +15,7 @@ public static class PasswordConfig {
             .AddJsonFile("appsettings.json")
             .Build();
 
-        var passwordSettings = config.Get<PasswordSettings>()
+        var passwordSettings = config.Get<PasswordSettingsModel>()
             ?? throw new InvalidOperationException("Missing or invalid password config in appsettings.json");
 
         MasterPassword = passwordSettings.MasterPasswordHash;

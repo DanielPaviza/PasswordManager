@@ -1,0 +1,15 @@
+<ResourceDictionary 
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:converter="clr-namespace:PasswordManager.Converters"
+	>
+
+	<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
+	<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
+	<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
+	<converter:PasswordCharConverter x:Key="PasswordCharConverter" />
+	<converter:PasswordShowIconConverter x:Key="PasswordShowIconConverter" />
+	<converter:StringToBoolConverter x:Key="StringToBoolConverter" />
+	<converter:ValidationStringToColorConverter x:Key="ValidationStringToColorConverter" />
+	
+</ResourceDictionary>

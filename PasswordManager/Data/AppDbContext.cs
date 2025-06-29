@@ -5,15 +5,15 @@ namespace PasswordManager.Data;
 
 public class AppDbContext : DbContext {
 
-    public DbSet<Credential> Credentials => Set<Credential>();
+    public DbSet<CredentialModel> Credentials => Set<CredentialModel>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        modelBuilder.Entity<Credential>(entity => {
-            entity.HasKey(e => e.Id);
+
+        modelBuilder.Entity<CredentialModel>(entity => {
+            entity.HasKey(e => new { e.ServiceName, e.Username });
             entity.Property(e => e.ServiceName).IsRequired();
-            entity.Property(e => e.Username).IsRequired();
             entity.Property(e => e.Password).IsRequired();
         });
     }

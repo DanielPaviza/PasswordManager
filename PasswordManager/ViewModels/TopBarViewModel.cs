@@ -8,8 +8,8 @@ namespace PasswordManager.ViewModels;
 public partial class TopBarViewModel : ViewModelBase {
 
     private readonly INavigationService Nav;
-    private readonly CredentialsListViewModel CredentialsListViewModel;
-    private readonly CredentialAddViewModel CredentialAddViewModel;
+    private readonly CredentialListViewModel CredentialsListViewModel;
+    private readonly CredentialFormViewModel CredentialAddViewModel;
 
     public static bool IncludeInNavStack => false;
 
@@ -20,11 +20,11 @@ public partial class TopBarViewModel : ViewModelBase {
     [ObservableProperty]
     public bool _isCredentialsListTabSelected;
 
-    [NotifyCanExecuteChangedFor(nameof(NavigateToCredentialsListCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NavigateToCredentialListCommand))]
     [ObservableProperty]
     public bool _isCredentialAddTabSelected;
 
-    public TopBarViewModel(INavigationService _nav, CredentialsListViewModel _credentialsListViewModel, CredentialAddViewModel _credentialAddViewModel) {
+    public TopBarViewModel(INavigationService _nav, CredentialListViewModel _credentialsListViewModel, CredentialFormViewModel _credentialAddViewModel) {
 
         Nav = _nav;
         CredentialsListViewModel = _credentialsListViewModel;
@@ -51,13 +51,12 @@ public partial class TopBarViewModel : ViewModelBase {
     private bool CanNavigateBack() => Nav.CanNavigateBack();
 
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
-    //[RelayCommand]
     private void NavigateBack() {
         Nav.NavigateBack();
     }
 
     [RelayCommand]
-    private void NavigateToCredentialsList() {
+    private void NavigateToCredentialList() {
         if (Nav.CurrentView != CredentialsListViewModel) {
             Nav.NavigateTo(CredentialsListViewModel);
         }
@@ -72,6 +71,6 @@ public partial class TopBarViewModel : ViewModelBase {
 
     private void UpdateTabSelection() {
         IsCredentialsListTabSelected = Nav.CurrentView == CredentialsListViewModel;
-        IsCredentialAddTabSelected = Nav.CurrentView == CredentialAddViewModel;
+        IsCredentialAddTabSelected = Nav.CurrentView is CredentialFormViewModel form && !form.IsEditMode;
     }
 }

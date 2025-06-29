@@ -18,7 +18,7 @@
 				<Button
 					Grid.Column="0"
 					Content="Vault"
-					Command="{Binding NavigateToCredentialsListCommand}"
+					Command="{Binding NavigateToCredentialListCommand}"
 					Background="{Binding IsCredentialsListTabSelected, Converter={StaticResource TabSelectionBrushConverter}}"
 					Foreground="White"
 					VerticalAlignment="Stretch"

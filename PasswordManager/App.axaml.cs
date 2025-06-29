@@ -36,8 +36,8 @@ public partial class App : Application {
             // Register ViewModels
             serviceCollection.AddSingleton<MainWindowViewModel>();
             serviceCollection.AddSingleton<TopBarViewModel>();
-            serviceCollection.AddSingleton<CredentialsListViewModel>();
-            serviceCollection.AddSingleton<CredentialAddViewModel>();
+            serviceCollection.AddSingleton<CredentialListViewModel>();
+            serviceCollection.AddSingleton<CredentialFormViewModel>();
 
             Services = serviceCollection.BuildServiceProvider();
 

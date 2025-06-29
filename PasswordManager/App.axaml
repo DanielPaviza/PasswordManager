@@ -1,11 +1,10 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="PasswordManager.App"
-			 xmlns:local="clr-namespace:PasswordManager"
-			 xmlns:converter="clr-namespace:PasswordManager.Converters"
-             RequestedThemeVariant="Default">
-             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
-
+			 xmlns:local="clr-namespace:PasswordManager"		 
+             RequestedThemeVariant="Default"
+>
+	
     <Application.DataTemplates>
         <local:ViewLocator/>
     </Application.DataTemplates>
@@ -13,36 +12,18 @@
 	<Application.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceInclude Source="avares://hpagent/Styles/IconStyle.axaml" />
+				<ResourceInclude Source="avares://hpagent/Resources/IconResource.axaml" />
 			</ResourceDictionary.MergedDictionaries>
-
-			<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
-			<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
-			<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
-			<converter:PasswordCharConverter x:Key="PasswordCharConverter" />
-			<converter:PasswordShowIconConverter x:Key="PasswordShowIconConverter" />
+			
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://hpagent/Resources/ConverterResource.axaml" />
+			</ResourceDictionary.MergedDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>
 
 	<Application.Styles>
 		<FluentTheme />
-
-		<Style Selector="TextBox.focus-black">
-			<Setter Property="Template">
-				<ControlTemplate>
-					<Border Name="border"
-							BorderBrush="{TemplateBinding BorderBrush}">
-						<TextPresenter Name="PART_TextPresenter"
-									   Text="{TemplateBinding Text}"
-									   Margin="{TemplateBinding Margin}"
-									   PasswordChar="{TemplateBinding PasswordChar}"
-									   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-									   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-					</Border>
-				</ControlTemplate>
-			</Setter>
-		</Style>
-		
+		<StyleInclude Source="avares://hpagent/Styles/FocusBlackTextBoxStyle.axaml" />
 	</Application.Styles>
 	
 </Application>

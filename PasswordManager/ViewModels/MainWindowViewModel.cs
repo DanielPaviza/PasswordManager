@@ -32,10 +32,10 @@ public partial class MainWindowViewModel : ViewModelBase {
     private Avalonia.Media.IImmutableSolidColorBrush _windowBgColor = Avalonia.Media.Brushes.Black;
 
     public TopBarViewModel TopBarViewModel { get; }
-    private readonly CredentialsListViewModel CredentialsListViewModel;
+    private readonly CredentialListViewModel CredentialsListViewModel;
     private readonly LoginViewModel LoginViewModel;
 
-    public MainWindowViewModel(INavigationService nav, CredentialsListViewModel _credentialsListViewModel, TopBarViewModel _topBarViewModel) {
+    public MainWindowViewModel(INavigationService nav, CredentialListViewModel _credentialsListViewModel, TopBarViewModel _topBarViewModel) {
 
         Nav = nav;
         CredentialsListViewModel = _credentialsListViewModel;
