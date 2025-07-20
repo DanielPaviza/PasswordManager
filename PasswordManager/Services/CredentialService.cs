@@ -3,6 +3,7 @@ using PasswordManager.Data;
 using PasswordManager.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PasswordManager.Services;
@@ -18,48 +19,63 @@ public class CredentialService {
     }
 
     public async Task<List<CredentialModel>> GetAllAsync() {
-        return await _db.Credentials.AsNoTracking().ToListAsync();
+        return await _db.Credentials.AsNoTracking().Select(c => new CredentialModel(c)).ToListAsync();
     }
 
     public async Task AddAsync(CredentialModel credential) {
 
         var validationResult = await ValidateCredentialAsync(credential);
-        if (validationResult != ValidationResult.Success) {
-            throw new ValidationException("Invalid credential data.");
+        if (validationResult.Count != 0) {
+            // TODO LOG Add credential validation error: {validationResult}
+            return;
         }
 
         credential.Password = _encryptionService.EncryptCredentials(credential.Password);
 
-        _db.Credentials.Add(credential);
+        _db.Credentials.Add(credential.ToEntity());
         await _db.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id) {
         var credential = await _db.Credentials.FindAsync(id);
-        if (credential != null) {
-            _db.Credentials.Remove(credential);
-            await _db.SaveChangesAsync();
+
+        if (credential == null) {
+            // TODO LOG Credential delete validation not found with ID: {id}
+            return;
         }
+
+        _db.Credentials.Remove(credential);
+        await _db.SaveChangesAsync();
+        // TODO LOG Credential deleted with ID: {id}
     }
 
     public async Task UpdateAsync(CredentialModel credential) {
-        _db.Credentials.Update(credential);
+
+        var validationResult = await ValidateCredentialAsync(credential);
+        if (validationResult.Count != 0) {
+            // TODO LOG Update credential validation error: {validationResult}
+            return;
+        }
+
+        _db.Credentials.Update(credential.ToEntity());
         await _db.SaveChangesAsync();
     }
 
-    public async Task<ValidationResult> ValidateCredentialAsync(CredentialModel credential) {
+    public async Task<List<ValidationResult>> ValidateCredentialAsync(CredentialModel credential) {
 
-        if (string.IsNullOrWhiteSpace(credential.ServiceName))
-            return new ValidationResult("Service name cannot be empty.", ["ServiceName"]);
+        var validationContext = new ValidationContext(credential);
+        var results = new List<ValidationResult>();
 
-        if (string.IsNullOrWhiteSpace(credential.Password))
-            return new ValidationResult("Password cannot be empty.", ["Password"]);
+        bool isValid = Validator.TryValidateObject(credential, validationContext, results, true);
+        if (!isValid) return results;
 
         bool exists = await _db.Credentials.AnyAsync(c => c.Id == credential.Id);
 
-        if (exists)
-            return new ValidationResult("Credential with same ServiceName and Username already exists.", ["Credential"]);
+        if (exists) {
+            results.Add(new ValidationResult("Credential with same ServiceName and Username already exists.", [nameof(credential.ServiceName), nameof(credential.Username)]));
+            return results;
+        }
 
-        return ValidationResult.Success!;
+        return results;
     }
 }

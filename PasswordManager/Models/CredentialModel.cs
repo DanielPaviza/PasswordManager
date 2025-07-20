@@ -1,22 +1,59 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using PasswordManager.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace PasswordManager.Models;
 
-public class CredentialModel {
+public partial class CredentialModel : ObservableValidator {
+    public string Id => $"{ServiceName}{Username}";
 
-    public string Id => $"{this.ServiceName}{this.Username}";
-
+    [ObservableProperty]
     [Required(ErrorMessage = "Service Name is required")]
-    public string ServiceName { get; set; } = string.Empty;
+    private string _serviceName = string.Empty;
 
-    public string Username { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string username = string.Empty;
 
-    public bool MaskUsername { get; set; } = false;
+    [ObservableProperty]
+    private bool maskUsername = false;
 
+    [ObservableProperty]
     [Required(ErrorMessage = "Password is required")]
-    public string Password { get; set; } = string.Empty;
+    private string _password = string.Empty;
 
-    public bool MaskPassword { get; set; } = true;
+    [ObservableProperty]
+    private bool maskPassword = true;
 
-    public string Note { get; set; } = string.Empty;
+    [ObservableProperty]
+    private string note = string.Empty;
+
+    public CredentialModel() { }
+
+    public CredentialModel(CredentialEntity credentialEntity) {
+        ServiceName = credentialEntity.ServiceName;
+        Username = credentialEntity.Username;
+        MaskUsername = credentialEntity.MaskUsername;
+        Password = credentialEntity.Password;
+        MaskPassword = credentialEntity.MaskPassword;
+        Note = credentialEntity.Note ?? "";
+    }
+
+    public CredentialEntity ToEntity() {
+        return new CredentialEntity {
+            ServiceName = this.ServiceName,
+            Username = this.Username,
+            MaskUsername = this.MaskUsername,
+            Password = this.Password,
+            MaskPassword = this.MaskPassword,
+            Note = this.Note
+        };
+    }
+
+    public void ValidateSingleProperty(string propertyName, object propertyValue) {
+        ValidateProperty(propertyValue, propertyName);
+    }
+
+    public void ValidateProperties() {
+        ValidateAllProperties();
+    }
 }

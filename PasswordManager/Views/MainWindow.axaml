@@ -22,18 +22,7 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-	<!--<Window.DataTemplates>
-		<DataTemplate DataType="{x:Type vm:LoginViewModel}">
-			<views:LoginView />
-		</DataTemplate>
-
-        <DataTemplate DataType="{x:Type vm:CredentialListViewModel}">
-			<views:CredentialsListView />
-        </DataTemplate>
-        
-	</Window.DataTemplates>-->
-
-	<Grid RowDefinitions="Auto,*">
+	<Grid RowDefinitions="Auto,* Auto">
 		<ContentControl
 			Grid.Row="0"
 			Content="{Binding TopBarViewModel}" 	
@@ -43,6 +32,12 @@
 		<ContentControl
 			Grid.Row="1"
 			Content="{Binding CurrentView}" />
+
+		<ContentControl
+			IsVisible="{Binding LogViewModel.IsVisible}"
+			Grid.Row="2"
+			Content="{Binding LogViewModel}"
+		/>
 	</Grid>
 
 </Window>

@@ -4,6 +4,7 @@ using PasswordManager.Interfaces;
 using PasswordManager.Models;
 using PasswordManager.Services;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -11,6 +12,7 @@ namespace PasswordManager.ViewModels;
 
 public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
 
+    private readonly ILogService LogService;
     private readonly INavigationService Nav;
     private readonly CredentialListViewModel CredentialListViewModel;
 
@@ -23,13 +25,7 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
     public bool IsEditMode { get; }
 
     public bool IncludeInNavStack => true;
-    public string Title => IsEditMode ? "Edit Credential" : "Add Credential";
-
-    //[ObservableProperty]
-    //public List<PropertyValidationModel> _validationErrors = [];
-
-    [ObservableProperty]
-    public Dictionary<string, string> _validationErrors = [];
+    public string Title => IsEditMode ? "Edit Credential" : "Save new Credentials";
 
     [ObservableProperty]
     public string _serviceNameError = "";
@@ -37,19 +33,28 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
     [ObservableProperty]
     public string _passwordError = "";
 
-    public CredentialFormViewModel(INavigationService _nav, CredentialListViewModel _credentialsListViewModel, CredentialModel? credential = null) {
+    public CredentialFormViewModel(
+        INavigationService _nav,
+        ILogService _logService,
+        CredentialListViewModel _credentialsListViewModel,
+        CredentialModel? credential = null
+        ) {
         Nav = _nav;
+        LogService = _logService;
         CredentialListViewModel = _credentialsListViewModel;
         Credential = credential ?? new();
+        RegisterDataResetOnViewChange();
 
-        // Reset data after view change
-        if (!IsEditMode && Nav is NavigationService navImpl) {
-            navImpl.PropertyChanged += (s, e) => {
-                if (e.PropertyName == nameof(navImpl.CurrentView)) {
-                    RefreshPage();
-                }
-            };
-        }
+        _logService.Log("CredentialFormViewModel initialized");
+    }
+
+    private string GetFirstErrorByProperty(string propertyName, object propertyValue) {
+
+        Credential.ValidateSingleProperty(propertyName, propertyValue);
+        var errorList = Credential.GetErrors(propertyName).ToList();
+        if (errorList.Count <= 0) return "";
+
+        return errorList.First().ErrorMessage!;
     }
 
     [RelayCommand]
@@ -65,24 +70,60 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
     [RelayCommand]
     private void SaveCredential() {
 
+
         var validationContext = new ValidationContext(Credential);
         var results = new List<ValidationResult>();
-
         bool isValid = Validator.TryValidateObject(Credential, validationContext, results, true);
-        SetValidationErrors(results);
 
         if (!isValid) {
+            SetValidationErrors();
+            LogService.Log("Credential save failed. Invalid credential data.");
             return;
+        }
+
+        //TODO CREDENTIALSERVICE.SAVE
+    }
+
+    // Credential instance changes when switching tabs
+    // Need to add propertyChanged to Credential again and detach the old one
+    partial void OnCredentialChanging(CredentialModel value) => DetachCredentialEvents(value);
+    partial void OnCredentialChanged(CredentialModel value) => value.PropertyChanged += CredentialPropertyChanged;
+
+    private void DetachCredentialEvents(CredentialModel? oldValue) {
+        if (oldValue != null)
+            oldValue.PropertyChanged -= CredentialPropertyChanged;
+    }
+
+    private void CredentialPropertyChanged(object? sender, PropertyChangedEventArgs e) {
+        switch (e.PropertyName) {
+            case nameof(Credential.ServiceName):
+                ServiceNameError = GetFirstErrorByProperty(e.PropertyName, Credential.ServiceName);
+                break;
+
+            case nameof(Credential.Password):
+                PasswordError = GetFirstErrorByProperty(e.PropertyName, Credential.Password);
+                break;
         }
     }
 
-    private void SetValidationErrors(List<ValidationResult> results) {
+    // Set Credential data to default on tab switch
+    private void RegisterDataResetOnViewChange() {
+        if (!IsEditMode && Nav is NavigationService navImpl) {
+            navImpl.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(navImpl.CurrentView)) {
+                    RefreshPage();
+                }
+            };
+        }
+    }
 
-        ServiceNameError = results.Find(result => result.MemberNames.Contains("ServiceName"))?.ErrorMessage ?? "";
-        PasswordError = results.Find(result => result.MemberNames.Contains("Password"))?.ErrorMessage ?? "";
+    private void SetValidationErrors() {
+        ServiceNameError = GetFirstErrorByProperty(nameof(Credential.ServiceName), Credential.ServiceName);
+        PasswordError = GetFirstErrorByProperty(nameof(Credential.Password), Credential.Password);
     }
 
     private void RefreshPage() {
+        LogService.Log("Refreshing create credential data");
         Credential = new();
         ServiceNameError = "";
         PasswordError = "";

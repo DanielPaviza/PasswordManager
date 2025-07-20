@@ -12,8 +12,9 @@
 
 	<!--<Border Background="#4287f5" Height="50">-->
 	<Border Background="#5c99fa" Height="50">
+
 		<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Stretch">
-			<!-- Left: Tabs -->
+
 			<Grid RowDefinitions="*" ColumnDefinitions="Auto,Auto" VerticalAlignment="Stretch">
 				<Button
 					Grid.Column="0"
@@ -23,7 +24,7 @@
 					Foreground="White"
 					VerticalAlignment="Stretch"
 					HorizontalAlignment="Center"
-					CornerRadius="0"					
+					CornerRadius="0"
 					VerticalContentAlignment="Center"
 					FontSize="17"
 					FontWeight="{Binding IsCredentialsListTabSelected, Converter={StaticResource TabSelectionFontWeightConverter}}"
@@ -53,18 +54,57 @@
 					   TextAlignment="Start"
 					   FontWeight="Bold"/>
 
-			<!-- Right: Navigation arrows -->
-			<Button 
-				Grid.Column="2" 
-				Content="← Back" 
-				VerticalAlignment="Stretch" 
-				Command="{Binding NavigateBackCommand}" 
-				Foreground="White"
-				VerticalContentAlignment="Center"		
-				CornerRadius="0"
-				Padding="20,0"
-				FontSize="16"
-			/>
+			<StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Right">
+				<Button
+					VerticalAlignment="Stretch"
+					Command="{Binding NavigateBackCommand}"
+					Foreground="White"
+					BorderThickness="0"
+					CornerRadius="0"
+					FontSize="16">
+					<TextBlock VerticalAlignment="Center" Text="← Back" />
+				</Button>
+
+				<Button 
+					HorizontalAlignment="Center" 
+					VerticalAlignment="Stretch">
+					<Button.Content>
+						<Path VerticalAlignment="Center"
+								Fill="White"
+								Data="{StaticResource settings_regular}" />
+					</Button.Content>
+					<Button.Flyout>
+						<MenuFlyout Placement="BottomEdgeAlignedRight">
+							<Button Command="{Binding LogViewModel.ToggleVisibility}"
+									HorizontalAlignment="Stretch"
+									BorderBrush="Gray"
+									Background="Transparent"
+									BorderThickness="1"
+									Margin="0"
+									Padding="6,0">
+								<StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+									<CheckBox IsChecked="{Binding LogViewModel.IsVisible}" VerticalAlignment="Center"/>
+									<TextBlock Text="Log" VerticalAlignment="Center"/>
+								</StackPanel>
+							</Button>
+							<MenuItem Header="-"/>
+							<StackPanel Orientation="Horizontal">
+								<Path VerticalAlignment="Center"
+									Fill="#5c99fa"
+									Data="{StaticResource flag_regular}"
+									Margin="0,0,10,0"/>
+								<ComboBox PlaceholderText="Česky" 
+										  HorizontalAlignment="Stretch"
+										  VerticalAlignment="Bottom">
+									<ComboBoxItem>Česky</ComboBoxItem>
+								</ComboBox>
+							</StackPanel>
+
+						</MenuFlyout>
+					</Button.Flyout>
+				</Button>
+				
+			</StackPanel>
 		</Grid>
 	</Border>
 

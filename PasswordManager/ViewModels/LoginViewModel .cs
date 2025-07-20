@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PasswordManager.Enums;
 using PasswordManager.Interfaces;
 using PasswordManager.Services;
 using System;
@@ -12,6 +13,8 @@ namespace PasswordManager.ViewModels;
 public partial class LoginViewModel : ViewModelBase, INamedViewModel {
 
     private static readonly Random Random = new();
+
+    private readonly ILogService _logService;
 
     public bool IncludeInNavStack => false;
     public string Title => "Login";
@@ -39,10 +42,12 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
         "[ERROR] Exiting",
     ];
 
-    public LoginViewModel(Action onLoginSuccess) {
+    public LoginViewModel(Action onLoginSuccess, ILogService logService) {
+        _logService = logService;
         _onLoginSuccess = onLoginSuccess;
         LoginCommand = new RelayCommand(Login);
         RenderDecoyMessages();
+        _logService.Log("LoginViewModel initialized");
     }
 
     private async void RenderDecoyMessages() {
@@ -63,6 +68,7 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
             return;
         }
 
+        _logService.Log("Login failed - Incorrect master password.", LogSeverityEnum.Warning);
         InputPassword = "";
     }
 }

@@ -7,9 +7,13 @@ namespace PasswordManager.ViewModels;
 
 public partial class TopBarViewModel : ViewModelBase {
 
-    private readonly INavigationService Nav;
-    private readonly CredentialListViewModel CredentialsListViewModel;
-    private readonly CredentialFormViewModel CredentialAddViewModel;
+    private readonly INavigationService _nav;
+    private readonly CredentialListViewModel _credentialsListViewModel;
+    private readonly CredentialFormViewModel _credentialAddViewModel;
+    private readonly ILogService _logService;
+
+    [ObservableProperty]
+    private LogViewModel _logViewModel;
 
     public static bool IncludeInNavStack => false;
 
@@ -24,11 +28,19 @@ public partial class TopBarViewModel : ViewModelBase {
     [ObservableProperty]
     public bool _isCredentialAddTabSelected;
 
-    public TopBarViewModel(INavigationService _nav, CredentialListViewModel _credentialsListViewModel, CredentialFormViewModel _credentialAddViewModel) {
+    public TopBarViewModel(
+        INavigationService Nav,
+        CredentialListViewModel CredentialsListViewModel,
+        CredentialFormViewModel CredentialAddViewModel,
+        LogViewModel __logViewModel,
+        ILogService logService
+        ) {
 
-        Nav = _nav;
-        CredentialsListViewModel = _credentialsListViewModel;
-        CredentialAddViewModel = _credentialAddViewModel;
+        _nav = Nav;
+        _credentialsListViewModel = CredentialsListViewModel;
+        _credentialAddViewModel = CredentialAddViewModel;
+        LogViewModel = __logViewModel;
+        _logService = logService;
 
         // Title initialization
         if (Nav.CurrentView != null) {
@@ -46,31 +58,33 @@ public partial class TopBarViewModel : ViewModelBase {
             };
         }
 
+
+        _logService.Log("TopBarViewModel initialized");
     }
 
-    private bool CanNavigateBack() => Nav.CanNavigateBack();
+    private bool CanNavigateBack() => _nav.CanNavigateBack();
 
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void NavigateBack() {
-        Nav.NavigateBack();
+        _nav.NavigateBack();
     }
 
     [RelayCommand]
     private void NavigateToCredentialList() {
-        if (Nav.CurrentView != CredentialsListViewModel) {
-            Nav.NavigateTo(CredentialsListViewModel);
+        if (_nav.CurrentView != _credentialsListViewModel) {
+            _nav.NavigateTo(_credentialsListViewModel);
         }
     }
 
     [RelayCommand]
     private void NavigateToAddCredential() {
-        if (Nav.CurrentView != CredentialAddViewModel) {
-            Nav.NavigateTo(CredentialAddViewModel);
+        if (_nav.CurrentView != _credentialAddViewModel) {
+            _nav.NavigateTo(_credentialAddViewModel);
         }
     }
 
     private void UpdateTabSelection() {
-        IsCredentialsListTabSelected = Nav.CurrentView == CredentialsListViewModel;
-        IsCredentialAddTabSelected = Nav.CurrentView is CredentialFormViewModel form && !form.IsEditMode;
+        IsCredentialsListTabSelected = _nav.CurrentView == _credentialsListViewModel;
+        IsCredentialAddTabSelected = _nav.CurrentView is CredentialFormViewModel form && !form.IsEditMode;
     }
 }
