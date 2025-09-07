@@ -15,6 +15,7 @@ public class LogModel(string message, LogSeverityEnum Severity = LogSeverityEnum
 
     private static string GetSeverityCode(LogSeverityEnum severity) {
         return severity switch {
+            LogSeverityEnum.Debug => "DBG",
             LogSeverityEnum.Info => "INF",
             LogSeverityEnum.Success => "SUC",
             LogSeverityEnum.Warning => "WAR",

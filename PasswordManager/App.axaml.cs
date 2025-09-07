@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Microsoft.Extensions.DependencyInjection;
+using PasswordManager.Interfaces;
 using PasswordManager.ViewModels;
 using System.Linq;
 
@@ -18,13 +19,14 @@ public partial class App : Application {
     }
 
     public override void OnFrameworkInitializationCompleted() {
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
 
             Services = DependencyInjection.Configure();
+            Converters.TranslationMultiConverter.Configure(Services.GetRequiredService<ILanguageService>());
 
             var mainWindowVm = Services.GetRequiredService<MainWindowViewModel>();
             var mainWindow = new Views.MainWindow { DataContext = mainWindowVm };
-
             desktop.MainWindow = mainWindow;
 
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 

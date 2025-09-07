@@ -10,9 +10,9 @@ public class CredentialListViewModel : ViewModelBase, INamedViewModel {
     public CredentialListViewModel(INavigationService nav, ILogService logService) {
         _nav = nav;
         _logService = logService;
-        _logService.Log("CredentialListViewModel initialized");
+        _logService.LogInfo("CredentialListViewModel initialized");
     }
 
     public bool IncludeInNavStack => true;
-    public string Title => "Credential vault";
+    public string Title => "credential_vault";
 }

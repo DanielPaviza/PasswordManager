@@ -17,11 +17,14 @@ public static class DependencyInjection {
 
         // Services
         services.AddSingleton<INavigationService, NavigationService>();
+        services.AddSingleton<ICredentialService, CredentialService>();
         services.AddSingleton<IEncryptionService, EncryptionService>();
         services.AddSingleton<ILogService, LogService>();
+        services.AddSingleton<ILanguageService, LanguageService>();
 
         // ViewModels
         services.AddSingleton<MainWindowViewModel>();
+        services.AddSingleton<LoginViewModel>();
         services.AddSingleton<TopBarViewModel>();
         services.AddSingleton<LogViewModel>();
         services.AddSingleton<CredentialListViewModel>();

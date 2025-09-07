@@ -8,7 +8,7 @@ public partial class CredentialModel : ObservableValidator {
     public string Id => $"{ServiceName}{Username}";
 
     [ObservableProperty]
-    [Required(ErrorMessage = "Service Name is required")]
+    [Required(ErrorMessageResourceName = "service_name_required", ErrorMessageResourceType = typeof(Resources.Translations.Translations))]
     private string _serviceName = string.Empty;
 
     [ObservableProperty]
@@ -18,7 +18,7 @@ public partial class CredentialModel : ObservableValidator {
     private bool maskUsername = false;
 
     [ObservableProperty]
-    [Required(ErrorMessage = "Password is required")]
+    [Required(ErrorMessageResourceName = "password_required", ErrorMessageResourceType = typeof(Resources.Translations.Translations))]
     private string _password = string.Empty;
 
     [ObservableProperty]
@@ -38,22 +38,16 @@ public partial class CredentialModel : ObservableValidator {
         Note = credentialEntity.Note ?? "";
     }
 
-    public CredentialEntity ToEntity() {
-        return new CredentialEntity {
-            ServiceName = this.ServiceName,
-            Username = this.Username,
-            MaskUsername = this.MaskUsername,
-            Password = this.Password,
-            MaskPassword = this.MaskPassword,
-            Note = this.Note
-        };
-    }
+    public CredentialEntity ToEntity() => new() {
+        ServiceName = this.ServiceName,
+        Username = this.Username,
+        MaskUsername = this.MaskUsername,
+        Password = this.Password,
+        MaskPassword = this.MaskPassword,
+        Note = this.Note
+    };
 
-    public void ValidateSingleProperty(string propertyName, object propertyValue) {
-        ValidateProperty(propertyValue, propertyName);
-    }
+    public void ValidateSingleProperty(string propertyName, object propertyValue) => ValidateProperty(propertyValue, propertyName);
 
-    public void ValidateProperties() {
-        ValidateAllProperties();
-    }
+    public void ValidateProperties() => ValidateAllProperties();
 }

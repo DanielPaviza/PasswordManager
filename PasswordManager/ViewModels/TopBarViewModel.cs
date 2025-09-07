@@ -1,7 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PasswordManager.Enums;
+using PasswordManager.Extensions;
 using PasswordManager.Interfaces;
 using PasswordManager.Services;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PasswordManager.ViewModels;
 
@@ -11,6 +15,7 @@ public partial class TopBarViewModel : ViewModelBase {
     private readonly CredentialListViewModel _credentialsListViewModel;
     private readonly CredentialFormViewModel _credentialAddViewModel;
     private readonly ILogService _logService;
+    private readonly ILanguageService _languageService;
 
     [ObservableProperty]
     private LogViewModel _logViewModel;
@@ -28,12 +33,18 @@ public partial class TopBarViewModel : ViewModelBase {
     [ObservableProperty]
     public bool _isCredentialAddTabSelected;
 
+    [ObservableProperty]
+    private string _currentLanguage;
+
+    public IEnumerable<string> LanguageOptions { get; } = LanguageService.AllLanguages.Select(l => l.ToDisplayName());
+
     public TopBarViewModel(
         INavigationService Nav,
         CredentialListViewModel CredentialsListViewModel,
         CredentialFormViewModel CredentialAddViewModel,
         LogViewModel __logViewModel,
-        ILogService logService
+        ILogService logService,
+        ILanguageService languageService
         ) {
 
         _nav = Nav;
@@ -41,25 +52,31 @@ public partial class TopBarViewModel : ViewModelBase {
         _credentialAddViewModel = CredentialAddViewModel;
         LogViewModel = __logViewModel;
         _logService = logService;
+        _languageService = languageService;
 
-        // Title initialization
-        if (Nav.CurrentView != null) {
-            UpdateTabSelection();
-            Title = Nav.CurrentView.Title;
-        }
+        CurrentLanguage = _languageService.CurrentLanguage.ToDisplayName();
 
-        if (Nav is NavigationService navImpl) {
-            navImpl.PropertyChanged += (s, e) => {
-                if (e.PropertyName == nameof(navImpl.CurrentView)) {
-                    UpdateTabSelection();
-                    Title = navImpl.CurrentView!.Title;
-                    NavigateBackCommand.NotifyCanExecuteChanged();
-                }
-            };
-        }
+        OnCurrentViewChange();
 
+        Nav.PropertyChanged += (s, e) => {
+            if (e.PropertyName == nameof(Nav.CurrentView)) {
+                OnCurrentViewChange();
+                NavigateBackCommand.NotifyCanExecuteChanged();
+            }
+        };
 
-        _logService.Log("TopBarViewModel initialized");
+        this.PropertyChanged += (s, e) => {
+            if (e.PropertyName == nameof(CurrentLanguage)) {
+                OnLanguageChanged();
+            }
+        };
+
+        _logService.LogInfo("TopBarViewModel initialized");
+    }
+
+    private void OnCurrentViewChange() {
+        UpdateTabSelection();
+        Title = _nav.CurrentView.Title;
     }
 
     private bool CanNavigateBack() => _nav.CanNavigateBack();
@@ -86,5 +103,10 @@ public partial class TopBarViewModel : ViewModelBase {
     private void UpdateTabSelection() {
         IsCredentialsListTabSelected = _nav.CurrentView == _credentialsListViewModel;
         IsCredentialAddTabSelected = _nav.CurrentView is CredentialFormViewModel form && !form.IsEditMode;
+    }
+
+    private void OnLanguageChanged() {
+        AppLanguageEnum newLang = AppLanguageExtensions.FromDisplayName(CurrentLanguage);
+        _languageService.SetLanguage(newLang);
     }
 }

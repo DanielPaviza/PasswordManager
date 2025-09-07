@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PasswordManager.Data;
+using PasswordManager.Interfaces;
 using PasswordManager.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Services;
 
-public class CredentialService {
+public class CredentialService : ICredentialService {
     private readonly AppDbContext _db;
-    private readonly EncryptionService _encryptionService;
+    private readonly IEncryptionService _encryptionService;
 
-    public CredentialService(AppDbContext db, EncryptionService encryptionService) {
+    public CredentialService(AppDbContext db, IEncryptionService encryptionService) {
         _db = db;
         _encryptionService = encryptionService;
         _db.Database.EnsureCreated(); // Automaticky vytvoří databázi pokud neexistuje
@@ -61,7 +62,7 @@ public class CredentialService {
         await _db.SaveChangesAsync();
     }
 
-    public async Task<List<ValidationResult>> ValidateCredentialAsync(CredentialModel credential) {
+    private async Task<List<ValidationResult>> ValidateCredentialAsync(CredentialModel credential) {
 
         var validationContext = new ValidationContext(credential);
         var results = new List<ValidationResult>();

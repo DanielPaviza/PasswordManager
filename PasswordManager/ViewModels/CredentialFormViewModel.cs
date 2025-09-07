@@ -25,7 +25,7 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
     public bool IsEditMode { get; }
 
     public bool IncludeInNavStack => true;
-    public string Title => IsEditMode ? "Edit Credential" : "Save new Credentials";
+    public string Title => IsEditMode ? "edit_credential" : "save_new_credential";
 
     [ObservableProperty]
     public string _serviceNameError = "";
@@ -45,12 +45,13 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
         Credential = credential ?? new();
         RegisterDataResetOnViewChange();
 
-        _logService.Log("CredentialFormViewModel initialized");
+        _logService.LogInfo("CredentialFormViewModel initialized");
     }
 
     private string GetFirstErrorByProperty(string propertyName, object propertyValue) {
 
         Credential.ValidateSingleProperty(propertyName, propertyValue);
+
         var errorList = Credential.GetErrors(propertyName).ToList();
         if (errorList.Count <= 0) return "";
 
@@ -77,7 +78,7 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
 
         if (!isValid) {
             SetValidationErrors();
-            LogService.Log("Credential save failed. Invalid credential data.");
+            LogService.LogInfo("Credential save failed. Invalid credential data.");
             return;
         }
 
@@ -123,7 +124,7 @@ public partial class CredentialFormViewModel : ViewModelBase, INamedViewModel {
     }
 
     private void RefreshPage() {
-        LogService.Log("Refreshing create credential data");
+        LogService.LogInfo("Refreshing create credential data");
         Credential = new();
         ServiceNameError = "";
         PasswordError = "";

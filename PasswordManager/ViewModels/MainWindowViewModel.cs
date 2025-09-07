@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using PasswordManager.Enums;
 using PasswordManager.Interfaces;
 using PasswordManager.Services;
 
@@ -9,7 +8,7 @@ namespace PasswordManager.ViewModels;
 public partial class MainWindowViewModel : ViewModelBase {
 
     [ObservableProperty]
-    private INamedViewModel? _currentView;
+    private INamedViewModel _currentView;
 
     [ObservableProperty]
     private bool _isLoggedIn = false;
@@ -39,20 +38,24 @@ public partial class MainWindowViewModel : ViewModelBase {
     private readonly CredentialListViewModel CredentialsListViewModel;
     private readonly LoginViewModel LoginViewModel;
 
+    public MainWindowViewModel() { }
+
     public MainWindowViewModel(
         INavigationService _nav,
         ILogService _logService,
-        CredentialListViewModel _credentialsListViewModel,
+        LoginViewModel _loginViewModel,
         TopBarViewModel _topBarViewModel,
+        CredentialListViewModel _credentialsListViewModel,
         LogViewModel _logViewModel
         ) {
 
         Nav = _nav;
+        CurrentView = _nav.CurrentView;
         CredentialsListViewModel = _credentialsListViewModel;
         LogService = _logService;
         TopBarViewModel = _topBarViewModel;
         LogViewModel = _logViewModel;
-        LoginViewModel = new LoginViewModel(OnLoginSuccess, _logService);
+        LoginViewModel = _loginViewModel;
 
         if (Nav is NavigationService navImpl) {
             navImpl.PropertyChanged += (s, e) => {
@@ -62,14 +65,18 @@ public partial class MainWindowViewModel : ViewModelBase {
             };
         }
 
-        Nav.NavigateTo(LoginViewModel);
+        LoginViewModel.PropertyChanged += (s, e) => {
+            if (e.PropertyName == nameof(LoginViewModel.IsLoggedIn) && LoginViewModel.IsLoggedIn) {
+                OnLoginSuccess();
+            }
+        };
 
 #if DEBUG
-        LogService.Log("Debug enviroment detected - Skipping login.", LogSeverityEnum.Info);
+        LogService.LogInfo("Debug enviroment detected - Skipping login.");
         OnLoginSuccess();
 #endif
 
-        _logService.Log("MainWindowViewModel initialized");
+        _logService.LogInfo("MainWindowViewModel initialized");
     }
 
     private void OnLoginSuccess() {
@@ -80,7 +87,7 @@ public partial class MainWindowViewModel : ViewModelBase {
         WindowBgColor = Avalonia.Media.Brushes.White;
         WindowTitle = "Password Manager";
         IsLoggedIn = true;
-        LogService.Log("Successfully logged in", LogSeverityEnum.Info);
+        LogService.LogSuccess("Successfully logged in");
         // Default show of log view in debug mode
 #if DEBUG
         LogViewModel.IsVisible = true;

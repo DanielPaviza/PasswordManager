@@ -20,10 +20,10 @@ public class EncryptionService : IEncryptionService {
 
         using var ms = new MemoryStream();
         ms.Write(aes.IV, 0, aes.IV.Length); // Prepend IV to ciphertext
-        using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
-        using (var sw = new StreamWriter(cs)) {
-            sw.Write(plainText);
-        }
+        using var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write);
+        using var sw = new StreamWriter(cs);
+        sw.Write(plainText);
+
         return Convert.ToBase64String(ms.ToArray());
     }
 
@@ -42,7 +42,8 @@ public class EncryptionService : IEncryptionService {
         return sr.ReadToEnd();
     }
 
-    public static bool VerifyMasterPassword(string input) {
+    public bool VerifyMasterPassword(string input) {
+        if (string.IsNullOrEmpty(input)) return false;
         var saltBytes = Convert.FromBase64String(PasswordConfig.MasterPasswordSalt);
         var inputHash = HashService.HashPassword(input, saltBytes);
         bool success = PasswordConfig.MasterPassword.Equals(inputHash, StringComparison.CurrentCultureIgnoreCase);
@@ -53,7 +54,7 @@ public class EncryptionService : IEncryptionService {
 
     // Derive a 256-bit key from the master password using PBKDF2
     private static byte[] CreateKdfKey(string masterPassword) {
-        var password = Encoding.UTF8.GetBytes(PasswordConfig.MasterPassword);
+        var password = Encoding.UTF8.GetBytes(masterPassword);
         var salt = Encoding.UTF8.GetBytes(PasswordConfig.CredentialPasswordSalt);
         using var kdf = new Rfc2898DeriveBytes(password, salt, 100_000, HashAlgorithmName.SHA256);
         return kdf.GetBytes(32);

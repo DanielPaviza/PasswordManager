@@ -14,7 +14,7 @@ public partial class LogViewModel : ViewModelBase {
     private bool _isVisible = false;
 
     [ObservableProperty]
-    private bool _isOpen = false;
+    private bool _isOpen = true;
 
     [ObservableProperty]
     private string _textLogs = "";
@@ -26,7 +26,7 @@ public partial class LogViewModel : ViewModelBase {
             TextLogs = GetTextLogs();
         };
 
-        _logService.Log("LogViewModel initialized");
+        _logService.LogInfo("LogViewModel initialized");
     }
 
     private string GetTextLogs() => string.Join(Environment.NewLine, _logService.Logs.Reverse());
@@ -42,7 +42,7 @@ public partial class LogViewModel : ViewModelBase {
 
     [RelayCommand]
     public void ToggleVisibility() {
-        _logService.Log($"Toggling log view visibility to {!IsVisible}");
+        _logService.LogInfo($"Toggling log view visibility to {!IsVisible}");
         if (IsVisible) {
             CompletelyClose();
         } else {

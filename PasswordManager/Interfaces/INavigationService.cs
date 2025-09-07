@@ -1,8 +1,10 @@
-﻿namespace PasswordManager.Interfaces;
+﻿using System.ComponentModel;
 
-public interface INavigationService {
+namespace PasswordManager.Interfaces;
 
-    INamedViewModel? CurrentView { get; }
+public interface INavigationService : INotifyPropertyChanged {
+
+    INamedViewModel CurrentView { get; }
     void NavigateTo(INamedViewModel viewModel);
     void NavigateBack();
     bool CanNavigateBack();

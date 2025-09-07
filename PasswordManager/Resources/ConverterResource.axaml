@@ -6,10 +6,11 @@
 
 	<converter:ReverseBooleanConverter x:Key="ReverseBooleanConverter" />
 	<converter:TabSelectionBrushConverter x:Key="TabSelectionBrushConverter" />
-	<converter:TabSelectionBrushConverter x:Key="TabSelectionFontWeightConverter" />
+	<converter:TabSelectionFontWeightConverter x:Key="TabSelectionFontWeightConverter" />
 	<converter:PasswordCharConverter x:Key="PasswordCharConverter" />
 	<converter:PasswordShowIconConverter x:Key="PasswordShowIconConverter" />
 	<converter:StringToBoolConverter x:Key="StringToBoolConverter" />
 	<converter:ValidationStringToColorConverter x:Key="ValidationStringToColorConverter" />
+	<converter:TranslationMultiConverter x:Key="TranslationMultiConverter" />
 	
 </ResourceDictionary>

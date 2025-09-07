@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PasswordManager.Enums;
 using PasswordManager.Interfaces;
-using PasswordManager.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +13,7 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
     private static readonly Random Random = new();
 
     private readonly ILogService _logService;
+    private readonly IEncryptionService _encyptionService;
 
     public bool IncludeInNavStack => false;
     public string Title => "Login";
@@ -28,9 +27,10 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
     [ObservableProperty]
     private ObservableCollection<string> _decoyMessages = [];
 
-    public IRelayCommand LoginCommand { get; }
+    [ObservableProperty]
+    private bool _isLoggedIn = false;
 
-    private readonly Action _onLoginSuccess;
+    public IRelayCommand LoginCommand { get; }
 
     private readonly List<string> decoyMessagesAll = [
         "[ERROR] Failed to initialize module: SyncService",
@@ -42,12 +42,12 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
         "[ERROR] Exiting",
     ];
 
-    public LoginViewModel(Action onLoginSuccess, ILogService logService) {
+    public LoginViewModel(ILogService logService, IEncryptionService encyptionService) {
         _logService = logService;
-        _onLoginSuccess = onLoginSuccess;
+        _encyptionService = encyptionService;
         LoginCommand = new RelayCommand(Login);
         RenderDecoyMessages();
-        _logService.Log("LoginViewModel initialized");
+        _logService.LogInfo("LoginViewModel initialized");
     }
 
     private async void RenderDecoyMessages() {
@@ -63,12 +63,12 @@ public partial class LoginViewModel : ViewModelBase, INamedViewModel {
 
     private void Login() {
 
-        if (EncryptionService.VerifyMasterPassword(InputPassword)) {
-            _onLoginSuccess.Invoke();
+        if (_encyptionService.VerifyMasterPassword(InputPassword)) {
+            IsLoggedIn = true;
             return;
         }
 
-        _logService.Log("Login failed - Incorrect master password.", LogSeverityEnum.Warning);
+        _logService.LogWarning("Login failed - Incorrect master password.");
         InputPassword = "";
     }
 }
